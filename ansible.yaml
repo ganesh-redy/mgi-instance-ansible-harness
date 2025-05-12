@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Install required tools
+      shell: |
+        yum install -y yum-utils wget git python3 python3-pip epel-release
+        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        yum install -y docker-ce docker-ce-cli containerd.io
+        systemctl start docker
+        systemctl enable docker
+
+    - name: Run Harness Delegate container
+      shell: |
+        docker run  --cpus=1 --memory=2g \
+          -e DELEGATE_NAME=docker-delegate-mig-ansible \
+          -e NEXT_GEN="true" \
+          -e DELEGATE_TYPE="DOCKER" \
+          -e ACCOUNT_ID=ucHySz2jQKKWQweZdXyCog \
+          -e DELEGATE_TOKEN=NTRhYTY0Mjg3NThkNjBiNjMzNzhjOGQyNjEwOTQyZjY= \
+          -e DELEGATE_TAGS="" \
+          -e MANAGER_HOST_AND_PORT=https://app.harness.io us-docker.pkg.dev/gar-prod-setup/harness-public/harness/delegate:25.04.85701
+
+    - name: Download and run harness-docker-runner
+      shell: |
+        curl -L https://github.com/harness/harness-docker-runner/releases/download/v0.1.18/drone-docker-runner-linux-amd64 -o harness-docker-runner
+        chmod +x harness-docker-runner
+        ./harness-docker-runner server
