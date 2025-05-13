@@ -4,7 +4,8 @@ provider "google" {
 }
 locals {
   
-  ssh_pub_key      = file("/root/.shh/id_rsa.pub")
+  ssh_pub_key = file("/root/.ssh/id_rsa.pub")
+
 }
 
 resource "google_compute_instance_template" "temp1" {
