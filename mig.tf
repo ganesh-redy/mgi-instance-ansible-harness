@@ -1,5 +1,5 @@
 provider "google" {
-  credentials = file("file.json")
+
   project     = "sam-458313"
   zone        = "us-central1-a"
 }
