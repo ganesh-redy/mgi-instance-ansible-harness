@@ -1,9 +1,7 @@
 ---
 - hosts: all
   become: yes
-
   tasks:
-   tasks:
     - name: Install tools
       yum:
         name:
@@ -14,7 +12,8 @@
           - python3-pip
           - epel-release
         state: present
-        update_cache: yes
+        update_cache: true
+
     - name: Add Docker repository
       shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
       args:
@@ -32,7 +31,8 @@
       systemd:
         name: docker
         state: started
-        enabled: yes
+        enabled: true
+
     - name: Download harness-docker-runner binary
       shell: |
         if [ ! -f /usr/local/bin/harness-docker-runner ]; then
@@ -42,16 +42,15 @@
 
     - name: Run Harness Delegate container
       shell: |
-          docker run -d --cpus=1 --memory=2g --network=host \
-            -e DELEGATE_NAME=docker-delegate-mig-template-vm \
-            -e NEXT_GEN="true" \
-            -e DELEGATE_TYPE="DOCKER" \
-            -e ACCOUNT_ID=ucHySz2jQKKWQweZdXyCog \
-            -e DELEGATE_TOKEN=NTRhYTY0Mjg3NThkNjBiNjMzNzhjOGQyNjEwOTQyZjY= \
-            -e DELEGATE_TAGS="linux-amd64" \
-            -e MANAGER_HOST_AND_PORT=https://app.harness.io \
-            us-docker.pkg.dev/gar-prod-setup/harness-public/harness/delegate:25.05.85801
-        
+        docker run -d --cpus=1 --memory=2g --network=host \
+          -e DELEGATE_NAME=docker-delegate-mig-template-vm \
+          -e NEXT_GEN="true" \
+          -e DELEGATE_TYPE="DOCKER" \
+          -e ACCOUNT_ID=ucHySz2jQKKWQweZdXyCog \
+          -e DELEGATE_TOKEN=NTRhYTY0Mjg3NThkNjBiNjMzNzhjOGQyNjEwOTQyZjY= \
+          -e DELEGATE_TAGS="linux-amd64" \
+          -e MANAGER_HOST_AND_PORT=https://app.harness.io \
+          us-docker.pkg.dev/gar-prod-setup/harness-public/harness/delegate:25.05.85801
+
     - name: Run harness-docker-runner in foreground (this will hang Ansible)
-      shell: |
-        /usr/local/bin/harness-docker-runner server
+      shell: /usr/local/bin/harness-docker-runner server
