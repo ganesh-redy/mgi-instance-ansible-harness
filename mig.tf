@@ -4,7 +4,7 @@ provider "google" {
 }
 locals {
   
-  ssh_pub_key = file("/root/.ssh/id_rsa.pub")
+   ssh_pub_key = file("${path.module}/id_rsa.pub")
 
 }
 
