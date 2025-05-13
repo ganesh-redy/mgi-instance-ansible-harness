@@ -2,21 +2,19 @@ provider "google" {
   project = "sam-458313"
   zone    = "us-central1-a"
 }
-locals {
-  
-   ssh_pub_key = file("${path.module}/id_rsa.pub")
 
+locals {
+  ssh_pub_key = file("${path.module}/id_rsa.pub")
 }
 
 resource "google_compute_instance_template" "temp1" {
   name         = "template1"
   machine_type = "e2-standard-2"
 
-  boot_disk {
-    auto_delete = true
-    initialize_params {
-      image = "centos-cloud/centos-stream-9"
-    }
+  disk {
+    auto_delete  = true
+    boot         = true
+    source_image = "centos-cloud/centos-stream-9"
   }
 
   network_interface {
@@ -50,7 +48,7 @@ resource "google_compute_instance_group_manager" "manager" {
   zone               = "us-central1-a"
 
   version {
-    instance_template = google_compute_instance_template.temp1.self_link_unique
+    instance_template = google_compute_instance_template.temp1.self_link
   }
 
   target_size = 2
