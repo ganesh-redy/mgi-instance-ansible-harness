@@ -3,8 +3,8 @@ provider "google" {
   zone    = "us-central1-a"
 }
 locals {
-  ssh_pub_key_path = "/root/.shh/id_rsa.pub"
-  ssh_pub_key      = file(local.ssh_pub_key_path)
+  
+  ssh_pub_key      = file("/root/.shh/id_rsa.pub")
 }
 
 resource "google_compute_instance_template" "temp1" {
