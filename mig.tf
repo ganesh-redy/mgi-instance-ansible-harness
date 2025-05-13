@@ -19,6 +19,9 @@ resource "google_compute_instance_template" "temp1" {
 
   network_interface {
     network = "default"
+
+    # Adding access_config to assign an external IP
+    access_config {}
   }
 
   metadata = {
