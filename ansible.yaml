@@ -40,6 +40,11 @@
           chmod +x /usr/local/bin/harness-docker-runner
         fi
 
+    - name: Stop and remove all running/stopped containers (if any)
+      shell: |
+        docker ps -aq | xargs --no-run-if-empty docker rm -f
+      ignore_errors: true
+
     - name: Run Harness Delegate container
       shell: |
         docker run -d --cpus=1 --memory=2g --network=host \
@@ -52,5 +57,5 @@
           -e MANAGER_HOST_AND_PORT=https://app.harness.io \
           us-docker.pkg.dev/gar-prod-setup/harness-public/harness/delegate:25.05.85801
 
-    - name: Run harness-docker-runner in foreground (this will hang Ansible)
-      shell: /usr/local/bin/harness-docker-runner server
+    - name: Run harness-docker-runner in background
+      shell: nohup /usr/local/bin/harness-docker-runner server > /var/log/harness-runner.log 2>&1 &
