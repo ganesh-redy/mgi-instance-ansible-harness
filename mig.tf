@@ -1,19 +1,20 @@
 provider "google" {
-
-  project     = "sam-458313"
-  zone        = "us-central1-a"
+  project = "sam-458313"
+  zone    = "us-central1-a"
+}
+locals {
+  ssh_pub_key_path = "/root/.shh/id_rsa.pub"
+  ssh_pub_key      = file(local.ssh_pub_key_path)
 }
 
 resource "google_compute_instance_template" "temp1" {
   name         = "template1"
   machine_type = "e2-standard-2"
 
-  disk {
-    boot        = true
+  boot_disk {
     auto_delete = true
-
     initialize_params {
-      source_image = "centos-stream-9"
+      image = "centos-cloud/centos-stream-9"
     }
   }
 
@@ -22,13 +23,13 @@ resource "google_compute_instance_template" "temp1" {
   }
 
   metadata = {
-    ssh-keys = "ansible:${file("/root/.ssh/id_rsa.pub")}"
+    ssh-keys = "ansible:${local.ssh_pub_key}"
   }
 
   tags = ["harnessvms"]
 }
 
-resource "google_compute_health_check" "name" {
+resource "google_compute_health_check" "health" {
   name = "health1"
 
   http_health_check {
@@ -42,8 +43,8 @@ resource "google_compute_health_check" "name" {
   check_interval_sec  = 10
 }
 
-resource "google_compute_instance_group_manager" "mange" {
-  name               = "instance-manger-1"
+resource "google_compute_instance_group_manager" "manager" {
+  name               = "instance-manager-1"
   base_instance_name = "okay"
   zone               = "us-central1-a"
 
@@ -54,7 +55,7 @@ resource "google_compute_instance_group_manager" "mange" {
   target_size = 2
 
   auto_healing_policies {
-    health_check      = google_compute_health_check.name.self_link
+    health_check      = google_compute_health_check.health.self_link
     initial_delay_sec = 300
   }
 }
